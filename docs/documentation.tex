@@ -1,0 +1,119 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\title{Florida Flood Gauge Monitor\\[0.5em]\large Documentation}
+\author{Paul Fishwick and Claude Code}
+\date{February 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Overview}
+
+The Florida Flood Gauge Monitor is a web application that displays real-time water level data from over 500 USGS monitoring stations across Florida. Users can explore an interactive map, view 7-day historical charts for individual gauges, and generate AI-powered narratives explaining water level behavior.
+
+\section{Architecture}
+
+The application is built with the following technologies:
+
+\begin{itemize}[nosep]
+    \item \textbf{React + TypeScript} -- UI framework
+    \item \textbf{Vite} -- Build tool and dev server
+    \item \textbf{Leaflet} -- Interactive map rendering via OpenStreetMap
+    \item \textbf{Recharts} -- Time series chart visualization
+    \item \textbf{Google Gemini API} -- AI-generated gauge stories
+    \item \textbf{USGS Water Services API} -- Live gauge data source
+\end{itemize}
+
+\section{Features}
+
+\subsection{Interactive Map}
+
+The main view displays all active USGS flood gauges in Florida as blue markers on an OpenStreetMap base layer, as shown in Figure~\ref{fig:map}. Users can pan and zoom to explore gauge locations across the state.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{map-overview.png}
+    \caption{Main map view showing 557 active USGS flood gauges across Florida.}
+    \label{fig:map}
+\end{figure}
+
+\subsection{Gauge Chart}
+
+Clicking on any gauge marker opens a bottom panel displaying a 7-day historical chart of water level changes, as shown in Figure~\ref{fig:chart}. The y-axis shows water level change in feet, and the x-axis shows the date range. A ``Story'' button is available to generate an AI explanation.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{gauge-chart.png}
+    \caption{Historical water level chart for a selected gauge, with the Story button visible.}
+    \label{fig:chart}
+\end{figure}
+
+\subsection{AI-Generated Story}
+
+The Story feature uses Google Gemini to generate a narrative explanation of the water level data, as shown in Figure~\ref{fig:story}. Three detail levels are available:
+
+\begin{itemize}[nosep]
+    \item \textbf{Summary} -- One to two sentences
+    \item \textbf{Standard} -- A single paragraph
+    \item \textbf{Detailed} -- Two to three paragraphs
+\end{itemize}
+
+All three levels are fetched concurrently and cached, so switching between them is instant.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{gauge-story.png}
+    \caption{AI-generated story modal explaining water level behavior for a selected gauge.}
+    \label{fig:story}
+\end{figure}
+
+\section{Setup}
+
+\subsection{Prerequisites}
+
+\begin{itemize}[nosep]
+    \item Node.js (v18+)
+    \item npm
+\end{itemize}
+
+\subsection{Installation}
+
+\begin{verbatim}
+npm install
+\end{verbatim}
+
+\subsection{API Key Configuration}
+
+The Story feature requires a free Google Gemini API key. Obtain one at \url{https://aistudio.google.com}, then create a \texttt{.env.local} file in the project root:
+
+\begin{verbatim}
+VITE_GEMINI_API_KEY=your_key_here
+\end{verbatim}
+
+The application functions fully without an API key; only the Story feature is unavailable.
+
+\subsection{Running}
+
+\begin{verbatim}
+./start
+\end{verbatim}
+
+This script kills any existing process on port 5173, starts the Vite dev server, and opens the browser.
+
+\section{License}
+
+This project is released under the MIT License.
+
+\end{document}

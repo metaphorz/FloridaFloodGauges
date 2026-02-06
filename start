@@ -1,0 +1,14 @@
+#!/bin/zsh
+cd "$(dirname "$0")"
+
+# Kill any process using port 5173
+PID=$(lsof -ti:5173)
+if [ -n "$PID" ]; then
+  echo "Killing existing process on port 5173 (PID: $PID)"
+  kill -9 $PID
+  sleep 1
+fi
+
+npm run dev &
+sleep 3
+open http://localhost:5173

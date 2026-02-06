@@ -1,0 +1,142 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+\usepackage{graphicx}
+
+\title{Florida Flood Gauge Monitor}
+\subtitle{Real-Time Interactive Web Application with AI Analysis}
+\author{Paul Fishwick and Claude Code}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Project Overview}
+\begin{itemize}
+\item Web-based application for real-time flood gauge monitoring across Florida
+\item Integrates live data from USGS Water Services API
+\item Interactive map displaying active monitoring stations
+\item AI-powered explanations of water level fluctuations
+\item Built with modern web technologies (React, TypeScript, Vite)
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Purpose:} Transform raw sensor data into actionable insights accessible to both technical and non-technical users
+\end{frame}
+
+\begin{frame}{Interface Demonstration}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{interface.png}
+\caption{Interactive map with gauge locations, historical data chart, and AI-generated analysis panel}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Key Features}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\textbf{Data Integration}
+\begin{itemize}
+\item Live USGS API data
+\item 7-day historical trends
+\item Active gauges statewide
+\item Real-time updates
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Visualization}
+\begin{itemize}
+\item Interactive OpenStreetMap
+\item Time-series charts
+\item Responsive design
+\item Intuitive navigation
+\end{itemize}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\textbf{AI-Powered Analysis}
+\begin{itemize}
+\item Google Gemini integration
+\item Three detail levels
+\item Contextual explanations
+\item Cached for performance
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Factors Analyzed}
+\begin{itemize}
+\item Water body type
+\item Tidal influences
+\item Precipitation patterns
+\item Regional topography
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{System Architecture}
+\textbf{Component-Based Design:}
+\begin{itemize}
+\item \textbf{App Component:} State management, data orchestration, error handling
+\item \textbf{Map Component:} Leaflet-based interactive mapping with gauge markers
+\item \textbf{GaugeChart Component:} Recharts visualization of historical water levels
+\item \textbf{GaugeStory Component:} AI-generated explanations with detail toggles
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Unidirectional Data Flow:}
+\begin{enumerate}
+\item Fetch USGS data on initialization
+\item Store in component state
+\item Pass to child components via props
+\item User interactions update parent state
+\item Components re-render with new data
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Technical Stack}
+\begin{table}
+\begin{tabular}{ll}
+\textbf{Category} & \textbf{Technology} \\
+\hline
+Framework & React 19 with TypeScript 5 \\
+Build Tool & Vite 5 (fast development server) \\
+Mapping & Leaflet 1.9 + React-Leaflet 5 \\
+Charts & Recharts 3 \\
+AI Integration & Google Gemini API (gemini-2.5-flash) \\
+Data Source & USGS Water Services API \\
+Deployment & Single-page application (SPA) \\
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+\textbf{Key Implementation Details:}
+\begin{itemize}
+\item Environment variables via Vite (\texttt{import.meta.env})
+\item Story caching for instant detail level switching
+\item Comprehensive error handling and loading states
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\textbf{Achievements:}
+\begin{itemize}
+\item Successfully integrated real-time government data with modern web interface
+\item Enhanced raw sensor data with AI-generated contextual explanations
+\item Created accessible tool for both technical and non-technical users
+\item Demonstrated effective use of React, TypeScript, and AI technologies
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Future Enhancements:}
+\begin{itemize}
+\item Additional data sources (weather, precipitation forecasts)
+\item Predictive flood modeling capabilities
+\item Extended historical trend analysis
+\item Mobile-optimized responsive interface
+\item User alerts for critical water level changes
+\end{itemize}
+\end{frame}
+
+\end{document}
