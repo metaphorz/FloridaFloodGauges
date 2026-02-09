@@ -50,13 +50,6 @@ const App: React.FC = () => {
   const handleOpenStory = async () => {
     if (!selectedGauge) return;
 
-    // Check if the Gemini API key is configured
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey || apiKey === 'your_key_here') {
-        setError('The Story feature requires a free Google Gemini API key.\n\n1. Visit https://aistudio.google.com to get a free key\n2. Create a file called .env.local in the project root\n3. Add: VITE_GEMINI_API_KEY=your_key_here\n4. Restart the dev server');
-        return;
-    }
-
     setStoryLevel('summary'); // Always open on summary view first
     setIsStoryOpen(true);
 

@@ -1,0 +1,32 @@
+#!/bin/zsh
+cd "$(dirname "$0")"
+
+# Temporarily hide .env.local so Vite doesn't inline secrets into the build
+if [ -f .env.local ]; then
+  mv .env.local .env.local.bak
+  echo "Temporarily moved .env.local aside"
+  RESTORE=true
+fi
+
+npm run build
+
+# Safety check: ensure no secrets leaked into dist
+if [ -f dist/.env.local ] || grep -r "VITE_GEMINI_API_KEY" dist/ --include="*.html" -q 2>/dev/null; then
+  echo "ERROR: Secrets detected in dist/. Aborting deploy."
+  # Restore .env.local before exiting
+  if [ "$RESTORE" = true ]; then
+    mv .env.local.bak .env.local
+  fi
+  exit 1
+fi
+
+# Clean gh-pages cache to prevent stale files
+rm -rf node_modules/.cache/gh-pages
+
+npx gh-pages -d dist
+
+# Restore .env.local for local development
+if [ "$RESTORE" = true ]; then
+  mv .env.local.bak .env.local
+  echo "Restored .env.local"
+fi

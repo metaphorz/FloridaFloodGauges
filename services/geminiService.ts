@@ -1,6 +1,7 @@
 
 import { FloodGauge, GaugeDataPoint, StoryLevel, USGSResponse } from '../types';
-import { GoogleGenAI } from "@google/genai";
+
+const API_PROXY_URL = 'https://api-proxy.metaphorz.workers.dev';
 
 /**
  * Fetches live flood gauge data for Florida from the official USGS Water Services API.
@@ -66,8 +67,6 @@ export const getFloridaFloodGauges = async (): Promise<FloodGauge[]> => {
  * @returns A string containing the generated story.
  */
 export const getGaugeStory = async (gauge: FloodGauge, level: StoryLevel): Promise<string> => {
-    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-
     let lengthInstruction = '';
     switch (level) {
         case 'summary':
@@ -81,36 +80,35 @@ export const getGaugeStory = async (gauge: FloodGauge, level: StoryLevel): Promi
             break;
     }
 
-    const prompt = `
-    You are a hydrologist and science communicator. Your task is to explain the water level fluctuations for the "${gauge.name}" gauge in Florida.
-    
-    Important: The 'level' data represents the water surface ELEVATION in feet above sea level, NOT the actual water depth. Please make this clear in your explanation.
+    const systemInstruction = `You are a hydrologist and science communicator. Your task is to explain the water level fluctuations for a given gauge in Florida based on its recent historical data.
 
-    Historical Data (last 7 days, surface elevation):
-    ${gauge.historicalData?.map(d => `${new Date(d.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'})}: ${d.level} ft`).join('\n')}
-    
-    Provide a concise and easy-to-understand explanation for why the water level might behave this way.
-    Focus on the *fluctuation* (the change in level), as this is the most meaningful information.
-    
-    Consider factors like:
-    - The water body type (river, coastal lagoon, lake, swamp).
-    - Influence of ocean tides if it's a coastal system.
-    - Impact of recent rainfall or lack thereof.
-    - Scale of the fluctuation (e.g., a 0.5 ft change is significant for a shallow lagoon but minor for a large river).
-    
-    If the base elevation is high (e.g., over 50 feet), briefly explain that this is due to the region's topography and does not represent water depth.
-    
-    **Crucially, start your explanation directly. Do not use any introductory phrases, greetings, or self-identifications like "Hello," "As a hydrologist," or "Here is an explanation...".**
-    
-    ${lengthInstruction}
-    `;
+Key points to remember in your explanation:
+- The 'level' data is water surface ELEVATION in feet above sea level, NOT water depth. This is a crucial distinction.
+- Focus on explaining the *fluctuation* or *change* in the water level, as this is the most significant aspect.
+- Consider potential factors for the changes: water body type (river, coastal), tidal influence, recent rainfall, and the scale of fluctuation.
+- If the base elevation is high (e.g., >50 ft), mention this is due to regional topography.
+- **IMPORTANT**: Begin your response directly with the explanation. Do not use any introductory phrases like "As a hydrologist..." or "Here is an explanation...".`;
+
+    const prompt = `
+Please explain the water level data for the "${gauge.name}" gauge.
+
+Historical Data (last 7 days, surface elevation):
+${gauge.historicalData?.map(d => `${new Date(d.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'})}: ${d.level} ft`).join('\n')}
+
+${lengthInstruction}
+`;
 
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
+        const response = await fetch(`${API_PROXY_URL}/api/story`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, systemInstruction }),
         });
-        return response.text;
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'API proxy error');
+        }
+        return data.text;
     } catch (error) {
         console.error("Error generating gauge story:", error);
         throw new Error('Could not generate the story for this gauge. The AI model may be temporarily unavailable.');
